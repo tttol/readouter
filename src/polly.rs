@@ -6,6 +6,8 @@ use aws_sdk_polly::{
 
 const CHUNK_SIZE_LIMIT: usize = 2800;
 
+/// Splits the given text into chunks that each fit within the Polly SSML size limit (2800 chars).
+/// Splits first by double-newline paragraphs, then by sentences if a single paragraph is too large.
 pub fn split_text(text: &str) -> Vec<String> {
     let mut chunks: Vec<String> = Vec::new();
     let mut current = String::new();
@@ -53,6 +55,8 @@ pub fn split_text(text: &str) -> Vec<String> {
     chunks
 }
 
+/// Wraps the given text in an SSML `<speak><prosody>` element with the specified speech rate.
+/// The speed value (e.g. 0.8) is converted to a percentage string (e.g. "80%").
 pub fn to_ssml(text: &str, speed: f64) -> String {
     let rate_percent = (speed * 100.0).round() as u32;
     format!(
@@ -61,6 +65,7 @@ pub fn to_ssml(text: &str, speed: f64) -> String {
     )
 }
 
+/// Calls Amazon Polly to synthesize the given SSML into MP3 audio bytes using the Neural engine.
 pub async fn synthesize(
     client: &Client,
     ssml: &str,

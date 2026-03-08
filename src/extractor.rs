@@ -2,6 +2,7 @@ use anyhow::{Context, Result};
 use aws_sdk_bedrockruntime::primitives::Blob;
 use aws_sdk_bedrockruntime::Client;
 
+/// Fetches raw HTML content from the given URL using a blocking HTTP GET request.
 pub fn fetch_html(url: &str) -> Result<String> {
     let html = reqwest::blocking::get(url)
         .context("Failed to fetch URL")?
@@ -10,6 +11,8 @@ pub fn fetch_html(url: &str) -> Result<String> {
     Ok(html)
 }
 
+/// Sends the raw HTML to Amazon Bedrock (Claude) and returns the extracted plain article text,
+/// stripping navigation, ads, headers, footers, and other non-article content.
 pub async fn extract_article(client: &Client, model_id: &str, html: &str) -> Result<String> {
     let prompt = format!(
         "Extract only the main article body text from this HTML. \

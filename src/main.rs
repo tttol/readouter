@@ -7,6 +7,7 @@ use anyhow::Result;
 use clap::Parser;
 use cli::Args;
 
+/// Entry point: orchestrates the full pipeline from URL to MP3 output.
 #[tokio::main]
 async fn main() -> Result<()> {
     let args = Args::parse();
