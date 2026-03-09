@@ -39,31 +39,60 @@ ARGS:
   <URL>  Target article URL
 
 OPTIONS:
-  -o, --output <FILE>    Output MP3 file path (default: ./output.mp3)
+  -o, --output <FILE>    Output MP3 file path
   -s, --speed <RATE>     Speech rate 0.2 to 5.0 (default: 1.0)
   -v, --voice <VOICE>    Polly voice name (default: Joanna)
-  -m, --model <MODEL_ID> Bedrock model ID (default: anthropic.claude-3-haiku-20240307-v1:0)
+  -m, --model <MODEL_ID> Bedrock model ID (default: us.anthropic.claude-haiku-4-5-20251001-v1:0)
   -h, --help             Print help
 ```
+
+## Output File
+
+If `--output` is not specified, the file is saved automatically:
+
+```
+~/readouter/output_{title}_{yyyyMMddHHmmss}.mp3
+```
+
+- `{title}` is derived from the `<title>` tag of the fetched HTML (non-alphanumeric characters are replaced with `_`)
+- `{yyyyMMddHHmmss}` is the local datetime at the time of execution
+- The output directory is created automatically if it does not exist
+
+### Environment Variables
+
+| Variable | Description |
+|----------|-------------|
+| `AWS_PROFILE` | AWS SSO profile name |
+| `AWS_DEFAULT_REGION` | AWS region (recommended: `us-east-1`) |
+| `READOUTER_OUTPUT_DIR` | Override the default output directory (`~/readouter`) |
 
 ### Examples
 
 ```bash
-# Basic usage
+# Basic usage — saved to ~/readouter/output_{title}_{timestamp}.mp3
 readouter https://example.com/article
 
 # Custom speed and voice
-readouter https://example.com/article --speed 0.8 --voice Matthew -o article.mp3
+readouter https://example.com/article --speed 0.8 --voice Matthew
+
+# Specify output path explicitly
+readouter https://example.com/article -o article.mp3
+
+# Change output directory via environment variable
+READOUTER_OUTPUT_DIR=/tmp/audio readouter https://example.com/article
 
 # Use a more capable Bedrock model
-readouter https://example.com/article --model anthropic.claude-3-5-sonnet-20241022-v2:0
+readouter https://example.com/article --model us.anthropic.claude-sonnet-4-5-20251001-v1:0
 ```
 
-## Supported Polly Neural Voices
+## Bedrock Model
+The default model is **Claude Haiku 4.5** (`us.anthropic.claude-haiku-4-5-20251001-v1:0`).
 
-| Voice ID | Language    | Gender |
-|----------|-------------|--------|
-| Joanna   | US English  | Female |
-| Matthew  | US English  | Male   |
-| Ivy      | US English  | Female |
-| Justin   | US English  | Male   |
+## Supported Polly Neural Voices
+readouter uses Amazon Polly. Here is supported neural voices.
+| Voice ID | Language   | Gender |
+|----------|------------|--------|
+| Joanna   | US English | Female |
+| Matthew  | US English | Male   |
+| Ivy      | US English | Female |
+| Justin   | US English | Male   |

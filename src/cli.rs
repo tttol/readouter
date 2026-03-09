@@ -7,9 +7,9 @@ pub struct Args {
     /// Target article URL
     pub url: String,
 
-    /// Output MP3 file path
-    #[arg(short, long, default_value = "./output.mp3")]
-    pub output: String,
+    /// Output MP3 file path (default: ~/readouter/output_{title}_{timestamp}.mp3)
+    #[arg(short, long)]
+    pub output: Option<String>,
 
     /// Speech rate (0.2 to 5.0)
     #[arg(short, long, default_value_t = 1.0)]
@@ -20,6 +20,6 @@ pub struct Args {
     pub voice: String,
 
     /// Bedrock model ID
-    #[arg(short, long, default_value = "anthropic.claude-3-haiku-20240307-v1:0")]
+    #[arg(short, long, default_value = "us.anthropic.claude-haiku-4-5-20251001-v1:0")]
     pub model: String,
 }

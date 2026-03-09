@@ -2,11 +2,28 @@ use anyhow::{Context, Result};
 use aws_sdk_bedrockruntime::primitives::Blob;
 use aws_sdk_bedrockruntime::Client;
 
-/// Fetches raw HTML content from the given URL using a blocking HTTP GET request.
-pub fn fetch_html(url: &str) -> Result<String> {
-    let html = reqwest::blocking::get(url)
+/// Extracts the content of the <title> tag from HTML, sanitized for use as a filename.
+pub fn extract_title(html: &str) -> String {
+    let title = html
+        .find("<title>")
+        .and_then(|start| {
+            let rest = &html[start + 7..];
+            rest.find("</title>").map(|end| rest[..end].trim().to_string())
+        })
+        .unwrap_or_else(|| "untitled".to_string());
+    title
+        .chars()
+        .map(|c| if c.is_alphanumeric() || c == '-' || c == '_' { c } else { '_' })
+        .collect()
+}
+
+/// Fetches raw HTML content from the given URL using an async HTTP GET request.
+pub async fn fetch_html(url: &str) -> Result<String> {
+    let html = reqwest::get(url)
+        .await
         .context("Failed to fetch URL")?
         .text()
+        .await
         .context("Failed to read response body")?;
     Ok(html)
 }
